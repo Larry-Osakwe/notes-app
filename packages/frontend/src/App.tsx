@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { AppContext, AppContextType } from "./lib/contextLib";
 import { Auth } from "aws-amplify";
 import { useNavigate } from "react-router-dom";
+import { onError } from "./lib/errorLib.ts";
 
 function App() {
 	const nav = useNavigate();
@@ -21,9 +22,9 @@ function App() {
 		try {
 			await Auth.currentSession();
 			userHasAuthenticated(true);
-		} catch (e) {
-			if (e !== "No current user") {
-				alert(e);
+		} catch (error) {
+			if (error !== "No current user") {
+				onError(error);
 			}
 		}
 
