@@ -7,7 +7,7 @@ import LoaderButton from "../components/LoaderButton";
 import config from "../config";
 import { NoteType } from "../types/note";
 import Form from "react-bootstrap/Form";
-import { s3Upload } from "../lib/awsLib";
+import { deleteS3Object, s3Upload } from "../lib/awsLib";
 
 export default function Notes() {
     const file = useRef<null | File>(null)
@@ -80,6 +80,7 @@ export default function Notes() {
             if (file.current) {
                 attachment = await s3Upload(file.current);
             } else if (note && note.attachment) {
+                await deleteS3Object(note.attachment);
                 attachment = note.attachment;
             }
 
@@ -113,6 +114,9 @@ export default function Notes() {
 
         try {
             await deleteNote();
+            if (note && note.attachment) {
+                await deleteS3Object(note.attachment);
+            }
             nav("/");
         } catch (e) {
             onError(e);
